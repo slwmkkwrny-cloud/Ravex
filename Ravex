@@ -1,0 +1,131 @@
+-- Ravex Scripts Ultra V13 (Balanced Speed & Instant Grab)
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+local Title = Instance.new("TextLabel")
+
+-- אבטחה
+ScreenGui.Name = game:GetService("HttpService"):GenerateGUID(false)
+ScreenGui.Parent = game:GetService("CoreGui")
+
+-- הגדרות לוח
+MainFrame.Name = "RavexFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.Position = UDim2.new(0.5, -100, 0.4, -150)
+MainFrame.Size = UDim2.new(0, 200, 0, 310)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+UIStroke.Color = Color3.fromRGB(0, 255, 150)
+UIStroke.Thickness = 2
+UIStroke.Parent = MainFrame
+
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.Text = "RAVEX SCRIPTS"
+Title.TextColor3 = Color3.fromRGB(0, 255, 150)
+Title.TextSize = 20
+Title.Font = Enum.Font.GothamBlack
+Title.BackgroundTransparency = 1
+
+local Toggles = {
+    Speed = false,
+    LowGrav = false,
+    InstantGrab = false
+}
+
+local function createToggle(name, pos, toggleKey, callback)
+    local btn = Instance.new("TextButton")
+    local btnCorner = Instance.new("UICorner")
+    btn.Parent = MainFrame
+    btn.Size = UDim2.new(0.85, 0, 0, 35)
+    btn.Position = pos
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    btn.Text = name .. ": OFF"
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 11
+    btnCorner.Parent = btn
+
+    btn.MouseButton1Click:Connect(function()
+        Toggles[toggleKey] = not Toggles[toggleKey]
+        btn.Text = Toggles[toggleKey] and (name .. ": ON") or (name .. ": OFF")
+        btn.BackgroundColor3 = Toggles[toggleKey] and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(40, 40, 40)
+        callback(Toggles[toggleKey])
+    end)
+end
+
+--- פונקציונליות ---
+
+-- 1. Speed Booster (35 - מאוזן)
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            local hum = game.Players.LocalPlayer.Character.Humanoid
+            hum.WalkSpeed = Toggles.Speed and 35 or 16
+        end)
+    end
+end)
+
+createToggle("Speed Booster", UDim2.new(0.075, 0, 0.16, 0), "Speed", function() end)
+
+-- 2. Low Gravity (80)
+createToggle("Low Grav", UDim2.new(0.075, 0, 0.30, 0), "LowGrav", function(state)
+    local hum = game.Players.LocalPlayer.Character.Humanoid
+    workspace.Gravity = state and 80 or 196.2
+    hum.JumpPower = state and 45 or 50
+    hum.UseJumpPower = true
+end)
+
+-- 3. Instant Grab
+task.spawn(function()
+    while task.wait(0.5) do
+        if Toggles.InstantGrab then
+            for _, v in pairs(game:GetDescendants()) do
+                if v:IsA("ProximityPrompt") then
+                    v.HoldDuration = 0
+                end
+            end
+        end
+    end
+end)
+
+createToggle("Instant Grab", UDim2.new(0.075, 0, 0.44, 0), "InstantGrab", function() end)
+
+-- 4. FPS Boost
+local btnFPS = Instance.new("TextButton")
+local btnFPSCorner = Instance.new("UICorner")
+btnFPS.Parent = MainFrame
+btnFPS.Size = UDim2.new(0.85, 0, 0, 35)
+btnFPS.Position = UDim2.new(0.075, 0, 0.58, 0)
+btnFPS.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+btnFPS.Text = "Low GFX (FPS Boost)"
+btnFPS.TextColor3 = Color3.fromRGB(255, 255, 255)
+btnFPS.Font = Enum.Font.GothamBold
+btnFPSCorner.Parent = btnFPS
+btnFPS.MouseButton1Click:Connect(function()
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("Part") or v:IsA("MeshPart") then
+            v.Material = Enum.Material.Plastic
+        end
+    end
+    btnFPS.Text = "Boosted!"
+end)
+
+-- 5. Exit Game
+local btnExit = Instance.new("TextButton")
+local btnExitCorner = Instance.new("UICorner")
+btnExit.Parent = MainFrame
+btnExit.Size = UDim2.new(0.85, 0, 0, 35)
+btnExit.Position = UDim2.new(0.075, 0, 0.82, 0)
+btnExit.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+btnExit.Text = "Exit Game"
+btnExit.TextColor3 = Color3.fromRGB(255, 255, 255)
+btnExit.Font = Enum.Font.GothamBold
+btnExitCorner.Parent = btnExit
+btnExit.MouseButton1Click:Connect(function() game:Shutdown() end)
